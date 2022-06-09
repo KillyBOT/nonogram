@@ -5,7 +5,7 @@ project(nonogram VERSION 0.0.1)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 file (GLOB SOURCE_FILES "src/*.cpp")
-file (GLOB HEADER_FILES "src/*.hpp")
+file (GLOB HEADER_FILES "src/*.h")
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
