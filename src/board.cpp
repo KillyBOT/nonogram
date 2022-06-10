@@ -8,6 +8,60 @@
 
 using std::string;
 using std::vector;
+using std::cout;
+using std::endl;
+
+static const string cBase64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+//Convert to base64
+string to_base_64(const byte_t *data, size_t size){
+    size_t ind = 0;
+    string str;
+
+    while(ind < size){
+        str += cBase64Chars[data[ind] >> 2]; //First character
+
+        if(ind < size - 2){ //Second, third, and fourth characters
+            str += cBase64Chars[((data[ind] & 0b11) << 4) | (data[ind+1] >> 4)];
+            str += cBase64Chars[((data[ind+1] & 0b1111) << 2) | (data[ind+2] >> 6)];
+            str += cBase64Chars[data[ind+2] & 0b111111];
+        } else if (ind < size - 1) {
+            str += cBase64Chars[((data[ind] & 3) << 4) | (data[ind+1] >> 4)];
+            str += cBase64Chars[(data[ind+1] & 0b1111) << 2];
+            str += '=';
+        } else {
+            str += cBase64Chars[(data[ind] & 3) << 4];
+            str += "==";
+        }
+
+        ind += 3;
+    }
+
+    return str;
+    
+}
+//Convert base64 string into data field
+void from_base_64(byte_t *data, size_t size, string str){
+    if(str.empty()) return;
+    if(str.size() * 3 > size * 4) return;
+
+    uint32_t buff;
+    int toWrite = 3;
+    size_t dataInd = 0;
+    for(size_t ind = 0; ind < str.size(); ind+=4){
+        buff = 0;
+        for(size_t n = 0; n < 4; n++){
+            buff <<= 6;
+            if(str[ind+n] != '=') buff |= (cBase64Chars.find_first_of(str[ind+n]) & 0b111111);
+            else toWrite--;
+        }
+        for(size_t n = 0; n < toWrite; n++){
+            data[dataInd] = (buff >> (8 * (2-n))) & 0xFF;
+            dataInd++;
+        }
+
+    }
+}
 
 NGTile::NGTile(bool val, bool explored, bool guessVal){
     this->val = val;

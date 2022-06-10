@@ -9,9 +9,9 @@ using std::vector;
 using std::string;
 
 struct NGTile{
-    bool val;
-    bool explored;
-    bool guessVal;
+    bool val:1;
+    bool explored:1;
+    bool guessVal:1;
 
     NGTile(bool val = false, bool explored = false, bool guessVal = true);
 };
@@ -46,5 +46,8 @@ class NGBoard{
 
     void guess(int row, int col, bool guess);
 };
+
+string to_base_64(const byte_t *data, size_t size);
+void from_base_64(byte_t *data, size_t size, string str);
 
 #endif
